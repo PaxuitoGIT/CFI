@@ -299,5 +299,5 @@ Se realizó la configuración completa de todos los dispositivos de red, incluye
    - Se verificó la activación de IP routing en los switches de capa 3.
    - Se garantizó que todas las interfaces necesarias estuvieran activas con el comando "no shutdown".
 
-Al final no se pudo implementar de forma correcta el Firewall en el Cisco Packet Tracer
+### Al final no se pudo implementar de forma correcta el Firewall en el Cisco Packet Tracer
 ---
