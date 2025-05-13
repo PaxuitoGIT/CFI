@@ -1,6 +1,10 @@
 # CFI
 # Solución para la Arquitectura de Comunicaciones de una Ciudad Inteligente
 
+Link del repositorio: https://github.com/PaxuitoGIT/CFI
+
+Link del Github Pages: https://paxuitogit.github.io/CFI/
+
 ---
 
 ## **Paso 1: Diseño y Modelado de la Arquitectura de Comunicación**
