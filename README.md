@@ -94,10 +94,10 @@ C = 300,000,000 × log₂(101) ≈ 300,000,000 × 6.658 ≈ **1,997,400,000 bps 
 - Cabecera enlace = 18 bytes (Ethernet)  
 - Cabecera física = 4 bytes  
 
-**Eficiencia:**  
-\[
-\text{Eficiencia} = \frac{\text{Datos útiles}}{\text{Total transmitido}} = \frac{1500}{1500 + 18 + 4} = \frac{1500}{1522} \approx 98.55\%
-\]
+**Eficiencia**:  
+Eficiencia = (Datos útiles) / (Total transmitido)  
+Eficiencia = 1500 / (1500 + 18 + 4)  
+Eficiencia = 1500 / 1522 ≈ **98.55%**
 
 ---
 
@@ -109,16 +109,16 @@ Representa la asignación de subredes y cómo se interconectan los segmentos. Id
 
 ![Direccionamiento](images/Direccion.png "Direccionamiento")
 
-- **Zona Gubernamental:** 10.0.0.0/24  
-  - Red: 10.0.0.0  
-  - Broadcast: 10.0.0.255  
-  - Rango: 10.0.0.1 – 10.0.0.254
+- **Zona Gubernamental Servidor:** 10.10.0.0/24  
+  - Red: 10.10.1.0  
+  - Broadcast: 10.10.0.255  
+  - Rango: 10.10.0.1 – 10.10.0.254
 
-- **Zona Seguridad:** 10.0.1.0/24  
-- **Transporte/IoT:** 10.0.2.0/24  
-- **Multimedia:** 10.0.3.0/24
+- **Zona Gubernamental Operativo** 10.20.0.0/24
 
-*(Mismo esquema para cada segmento)*
+- **Zona Seguridad:** 10.30.0.0/24  
+- **Transporte/IoT:** 10.40.0.0/24  
+- **Multimedia:** 10.50.0.0/24
 
 ---
 
@@ -229,22 +229,75 @@ Ilustra la ubicación de los firewalls, túneles VPN y el servidor DNS con DNSSE
 
 ---
 
-# **Resumen Gráfico (resumido):**
-```
-[Internet]
-    |
-[Firewall]
-    |
-[Core Router]---[Zona Gubernamental: 10.0.0.0/24]
-    |           [Zona Seguridad: 10.0.1.0/24]
-    |           [Transporte/IoT: 10.0.2.0/24]
-    |           [Multimedia: 10.0.3.0/24]
-    |
-[Redundancia]
-    |
-[Servidores: DNSSEC, HTTP(S), SFTP]
-    |
-[Access Points / Switches / IoT Devices]
-```
+## Paso 7: Implementación en Cisco Packet Tracer
 
+### Construcción de la Topología
+
+La implementación en Cisco Packet Tracer ha seguido la estructura diseñada en las etapas anteriores, creando una red robusta para la ciudad inteligente con las siguientes características:
+
+- **Infraestructura core**: Se implementaron dos routers ISR4321 (Router-Gubernamental y Router-Resto) conectados mediante un enlace serial que forma el backbone de la red.
+- **Capa de distribución**: Se configuraron switches de capa 3 (3560-24PS) que proporcionan funcionalidades de enrutamiento intervlan, QoS y segmentación de red.
+- **Capa de acceso**: Se desplegaron switches de capa 2 (2960-24TT) para conectar dispositivos finales como servidores, PCs y potencialmente dispositivos IoT.
+- **Segmentación por zonas**: La red se ha dividido en zonas funcionales según lo planificado, con la zona gubernamental gestionada por el Router7 y las zonas de seguridad, IoT y multimedia gestionadas por el Router6.
+
+La topología física implementada refleja el diseño jerárquico de tres capas (core-distribución-acceso) que garantiza escalabilidad, redundancia y segmentación adecuada para los servicios de la ciudad inteligente.
+
+![Estructura](images/EstructuraCisco.png "Estructura")
+
+### Configuración de Protocolos y Servicios
+
+Se realizó la configuración completa de todos los dispositivos de red, incluyendo:
+
+1. **Enrutamiento**:
+   - Se estableció el enrutamiento estático entre los routers principales para garantizar la comunicación entre las diferentes zonas de la ciudad.
+   - Se configuraron rutas con next-hop apropiados, utilizando las interfaces seriales como puntos de interconexión (172.16.0.1/30 y 172.16.0.2/30).
+   - Se habilitó IP routing en los switches de capa 3 para permitir el enrutamiento intervlan.
+
+   ![PingRouter](images/PingRouter.png "Ping RouterResto a RouterGubernamental")
+
+   ![Router6](images/Router6.png "Router6")
+
+2. **Segmentación y VLANs**:
+   - **Zona Gubernamental**: VLANs 10 (Administrativa) y 20 (Operativa)
+   - **Resto de Zonas**: VLANs 30 (Seguridad), 40 (IoT) y 50 (Multimedia)
+   - Se configuraron los puertos troncales entre switches de distribución y acceso para permitir el paso de las VLANs correspondientes.
+
+   ![Vlan1020](images/Vlan1020.png "Vlan 10 y 20")
+
+   ![Vlan304050](images/Vlan304050.png "Vlan 30, 40 y 50")
+
+3. **Servicios básicos**:
+   - **DNS**: Configurado en el Servidor5 (10.10.0.10) para resolver nombres de dominios internos.
+   - **Web**: Se implementaron servidores web en la zona gubernamental y seguridad.
+   - **FTP**: Se configuró en el Servidor3 para transferencia de archivos multimedia.
+
+   ![Web](images/Web.png "Web")
+
+
+4. **Direccionamiento IP**:
+   - Se implementó un esquema de direccionamiento estructurado, con las redes 10.10.0.0/24, 10.20.0.0/24, 10.30.0.0/24, 10.40.0.0/24 y 10.50.0.0/24 para los diferentes segmentos.
+   - Se configuraron las SVI (interfaces VLAN) en los switches de capa 3 con las IPs 10.x0.0.1 correspondientes.
+
+   ![Ping](images/Ping.png "Ping PC2 a PC3") 
+
+### Pruebas y Validación
+
+1. **Conectividad básica**:
+   - Se verificó la conectividad entre los routers mediante pings exitosos a través del enlace serial.
+   - Se validó que los switches de distribución pudieran acceder a sus respectivos routers.
+   - Se resolvieron problemas de enrutamiento identificados durante las pruebas, específicamente con configuraciones incorrectas de next-hop.
+
+2. **Pruebas de enrutamiento intervlan**:
+   - Se confirmó que los dispositivos de diferentes VLANs dentro de una misma zona podían comunicarse entre sí a través del switch de capa 3.
+
+3. **Acceso a servicios**:
+   - Se probó la resolución DNS desde los equipos cliente.
+   - Se verificó el acceso a los servidores web desde diferentes segmentos de la red.
+
+4. **Correcciones realizadas**:
+   - Se identificaron y corrigieron errores en la configuración de rutas estáticas, donde inicialmente se habían configurado next-hops inválidos.
+   - Se verificó la activación de IP routing en los switches de capa 3.
+   - Se garantizó que todas las interfaces necesarias estuvieran activas con el comando "no shutdown".
+
+Al final no se pudo implementar de forma correcta el Firewall en el Cisco Packet Tracer
 ---
